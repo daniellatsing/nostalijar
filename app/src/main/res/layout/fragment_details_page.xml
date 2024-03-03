@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/detailsBlurbTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/your_memories_from_that_week"
@@ -53,13 +53,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/detailsBlurbTV"
         app:layout_constraintVertical_bias="0.0">
 
         <com.denzcoskun.imageslider.ImageSlider
             android:id="@+id/image_slider"
             android:layout_width="wrap_content"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             app:iss_auto_cycle="true"
             app:iss_delay="1000"
             app:iss_period="1000"
