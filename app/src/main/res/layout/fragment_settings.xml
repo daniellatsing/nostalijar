@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.notifications.NotificationsFragment">
+
+    <TextView
+        android:id="@+id/preferences"
+        android:layout_width="195dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/preferences"
+        android:textColor="#214469"
+        android:textSize="36sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextSizeCheck" />
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/startWeekTV"
+        app:layout_constraintTop_toBottomOf="@+id/startWeekTV">
+
+        <RadioButton
+            android:id="@+id/sundayRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="23dp"
+            android:text="@string/sunday" />
+
+        <RadioButton
+            android:id="@+id/mondayRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/monday" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/startWeekTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="27dp"
+        android:text="@string/start_of_the_week"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/preferences"
+        app:layout_constraintTop_toBottomOf="@+id/preferences" />
+
+    <Button
+        android:id="@+id/cancelBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:backgroundTint="#9CBCCD"
+        android:text="@string/cancel"
+        android:textColor="#5D4037"
+        app:layout_constraintBaseline_toBaselineOf="@+id/saveBtn"
+        app:layout_constraintEnd_toStartOf="@+id/saveBtn"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="75dp"
+        android:backgroundTint="#214469"
+        android:text="@string/save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cancelBtn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
