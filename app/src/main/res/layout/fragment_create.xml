@@ -3,7 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.create.CreateFragment">
+
+    <TextView
+        android:id="@+id/text_create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/createBlurbTV"
@@ -14,8 +30,7 @@
         app:layout_constraintBottom_toTopOf="@+id/inputTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.468" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/timeCapsuleTitleTV"
@@ -37,6 +52,7 @@
         android:id="@+id/inputTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:autofillHints="Insert title here"
         android:ems="10"
         android:inputType="text"
@@ -71,6 +87,7 @@
         android:id="@+id/inputImageBtn"
         android:layout_width="75dp"
         android:layout_height="75dp"
+        android:layout_margin="20dp"
         android:contentDescription="@string/user_images"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,6 +100,7 @@
         android:id="@+id/timeCapsuleCaptionTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="180dp"
         android:labelFor="@+id/inputCaption"
@@ -99,6 +117,7 @@
         android:id="@+id/inputCaption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:autofillHints=""
         android:ems="10"
         android:inputType="text"
@@ -117,6 +136,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="246dp"
+        android:layout_marginTop="30dp"
         android:labelFor="@+id/inputDate"
         android:text="@string/set_date_and_time"
         android:textSize="18sp"
@@ -148,6 +168,7 @@
         android:id="@+id/inputDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:autofillHints="Date"
         android:ems="10"
         android:inputType="date"
@@ -198,6 +219,5 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/setTimeBtn"
-        app:layout_constraintVertical_bias="0.265" />
-
+        app:layout_constraintVertical_bias="0.1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

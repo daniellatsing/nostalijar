@@ -3,13 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.details.DetailsFragment">
+
+    <TextView
+        android:id="@+id/text_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/detailsBlurbTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/your_memories_from_that_week"
+        android:layout_marginBottom="30dp"
+        android:text="@string/your_memories_from_the_week"
         android:textColor="#214469"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,7 +33,7 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.066" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/doneBtn"
@@ -29,7 +45,8 @@
         android:textColor="#5D4037"
         app:layout_constraintBaseline_toBaselineOf="@+id/shareBtn"
         app:layout_constraintEnd_toStartOf="@+id/shareBtn"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"/>
 
     <Button
         android:id="@+id/shareBtn"
@@ -37,24 +54,27 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="75dp"
+        android:layout_marginTop="20dp"
         android:backgroundTint="#214469"
         android:text="@string/share"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/doneBtn" />
+        app:layout_constraintStart_toEndOf="@+id/doneBtn"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <androidx.cardview.widget.CardView
-        android:layout_width="397dp"
-        android:layout_height="493dp"
-        android:layout_marginTop="17dp"
+        android:id="@+id/cardView"
+        android:layout_width="360dp"
+        android:layout_height="380dp"
+        android:layout_marginTop="24dp"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="20dp"
         app:cardElevation="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailsBlurbTV"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.08">
 
         <com.denzcoskun.imageslider.ImageSlider
             android:id="@+id/image_slider"

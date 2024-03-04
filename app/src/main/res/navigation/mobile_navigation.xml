@@ -12,14 +12,30 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="edu.uw.ischool.jho12.nostalijar.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_settings"
+        android:name="edu.uw.ischool.jho12.nostalijar.ui.settings.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/fragment_settings" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="edu.uw.ischool.jho12.nostalijar.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_settings" />
+        android:id="@+id/navigation_create"
+        android:name="edu.uw.ischool.jho12.nostalijar.ui.create.CreateFragment"
+        android:label="@string/title_create"
+        tools:layout="@layout/fragment_create" />
+
+    <fragment
+        android:id="@+id/navigation_details"
+        android:name="edu.uw.ischool.jho12.nostalijar.ui.details.DetailsFragment"
+        android:label="@string/title_details"
+        tools:layout="@layout/fragment_details" />
+
+    <fragment
+        android:id="@+id/navigation_open"
+        android:name="edu.uw.ischool.jho12.nostalijar.ui.open.OpenFragment"
+        android:label="@string/title_open"
+        tools:layout="@layout/fragment_open" >
+        <action
+            android:id="@+id/action_navigation_open_to_navigation_details"
+            app:destination="@id/navigation_details" />
+    </fragment>
 </navigation>

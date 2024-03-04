@@ -1,13 +1,13 @@
-package edu.uw.ischool.jho12.nostalijar.ui.notifications
+package edu.uw.ischool.jho12.nostalijar.ui.details
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class NotificationsViewModel : ViewModel() {
+class DetailsViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is notifications Fragment"
+        value = "This is details Fragment"
     }
     val text: LiveData<String> = _text
 }

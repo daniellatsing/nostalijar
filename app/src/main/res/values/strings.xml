@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">nostalijar</string>
+    <string name="app_name">Nostalijar</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_settings">Settings</string>
     <string name="preferences">Preferences</string>
     <string name="monday">Monday</string>
     <string name="sunday">Sunday</string>
@@ -30,5 +29,11 @@
     <string name="set_time">Set Time</string>
     <string name="done">Done</string>
     <string name="share">Share</string>
-    <string name="your_memories_from_that_week">Your memories from that week</string>
+    <string name="your_memories_from_the_week">Your memories from the week</string>
+    <string name="image_placeholder">image placeholder</string>
+    <string name="title_details_long">Time capsule details</string>
+    <string name="title_details">Details</string>
+    <string name="title_open">Open</string>
+    <string name="title_create_long">Create a time capsule</string>
+    <string name="title_create">Create</string>
 </resources>
