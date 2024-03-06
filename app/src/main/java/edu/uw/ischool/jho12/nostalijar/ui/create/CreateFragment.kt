@@ -94,20 +94,19 @@ class CreateFragment : Fragment() {
     }
 
     private fun setupDateAndTimePickers() {
-        binding.inputDate.setOnClickListener {
+        binding.selectDateBtn.setOnClickListener {
             val calendar = Calendar.getInstance()
-            DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
-                val formattedDate = "${month + 1}/$dayOfMonth/$year"
-                binding.inputDate.setText(formattedDate)
+            DatePickerDialog(requireContext(), { _, year, monthOfYear, dayOfMonth ->
+                val selectedDate = String.format("%02d/%02d/%04d", monthOfYear + 1, dayOfMonth, year)
+                binding.selectDateBtn.text = selectedDate
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
-        binding.inputTime.setOnClickListener {
+        binding.selectTimeBtn.setOnClickListener {
             val calendar = Calendar.getInstance()
             TimePickerDialog(requireContext(), { _, hourOfDay, minute ->
-                val amPm = if (hourOfDay < 12) "AM" else "PM"
-                val formattedTime = String.format("%02d:%02d %s", if (hourOfDay % 12 == 0) 12 else hourOfDay % 12, minute, amPm)
-                binding.inputTime.setText(formattedTime)
+                val formattedTime = String.format("%02d:%02d %s", if (hourOfDay % 12 == 0) 12 else hourOfDay % 12, minute, if (hourOfDay < 12) "AM" else "PM")
+                binding.selectTimeBtn.text = formattedTime
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
         }
     }
