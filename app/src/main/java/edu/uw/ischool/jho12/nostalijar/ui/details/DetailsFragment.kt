@@ -5,8 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentDetailsBinding
 
 class DetailsFragment : Fragment() {
@@ -31,6 +35,12 @@ class DetailsFragment : Fragment() {
         val textView: TextView = binding.textDetails
         dashboardViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
+        }
+
+        // Button logic
+        binding.doneBtn.setOnClickListener {
+            Toast.makeText(requireContext(), "Directing to Home", LENGTH_SHORT).show()
+            requireActivity().findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_home)
         }
         return root
     }
