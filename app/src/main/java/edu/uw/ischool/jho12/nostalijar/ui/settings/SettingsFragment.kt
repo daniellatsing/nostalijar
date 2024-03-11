@@ -1,26 +1,46 @@
 package edu.uw.ischool.jho12.nostalijar.ui.settings
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import android.Manifest
+import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentSettingsBinding
+import java.util.Calendar
 
 class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
+    var selectedDay: String? = null
+    private val code = 123
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
+    var alarmReceiver: BroadcastReceiver? = null
+    val ALARM_ACTION = "edu.uw.ischool.cammip.ALARM"
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
+
     ): View {
         val notificationsViewModel =
             ViewModelProvider(this).get(SettingsViewModel::class.java)
@@ -28,15 +48,86 @@ class SettingsFragment : Fragment() {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        val radioGroup: RadioGroup = binding.radioGroup
+
         val textView: TextView = binding.preferences
         notificationsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        radioGroup.setOnCheckedChangeListener { group, checked ->
+            when (checked) {
+                R.id.saturdayRB -> selectedDay = getString(R.string.saturday)
+                R.id.fridayRB -> selectedDay = getString(R.string.friday)
+            }
+        }
+
+        val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val saveButton = binding.saveBtn
+        saveButton.setOnClickListener {
+            if (selectedDay != null) {
+                //let user know their preference was saved
+                showToast("Preferences have been saved $selectedDay")
+                val filter = IntentFilter(ALARM_ACTION)
+                activity?.registerReceiver(alarmReceiver, filter)
+
+                //Checks permissions to set exact alarm
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    //alarmManager.setExact()
+                    val intent = Intent(requireContext(), AlarmReceiver::class.java)
+                    val calendar = Calendar.getInstance()
+
+                    when (selectedDay) {
+                        "Saturday" -> calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY)
+                        "Friday" -> calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
+                    }
+
+                    val pendingIntent = PendingIntent.getBroadcast(
+                        requireContext(),
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+
+                    alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+
+
+            } else {
+                showToast("Please select a day")
+            }
+
+            //Send preference to alarm manager
+            //Selected day is held in var selectedDay
+        }
+
+        val cancelButton = binding.cancelBtn
+        cancelButton.setOnClickListener {
+            radioGroup.clearCheck()
+            selectedDay = null
+            //activity?.unregisterReceiver(alarmReceiver)
+        }
+
         return root
+    }
+
+    private fun Fragment.showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+class AlarmReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        Toast.makeText(context, "Make a time capsule!", Toast.LENGTH_SHORT).show()
     }
 }
