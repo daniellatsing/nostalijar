@@ -36,4 +36,5 @@
     <string name="title_open">Open</string>
     <string name="title_create_long">Create a time capsule</string>
     <string name="title_create">Create</string>
+    <string name="timer_end_text">Time to see your capsule!</string>
 </resources>

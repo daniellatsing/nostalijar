@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -31,6 +33,9 @@ class HomeFragment : Fragment() {
         val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
+        }
+        binding.viewBtnHome.setOnClickListener {
+            requireActivity().findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_open)
         }
         return root
     }
