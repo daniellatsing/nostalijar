@@ -77,7 +77,6 @@ class OpenFragment : Fragment() {
         Log.i("Time", currentDate.time.toString())
         Log.i("Time2", eventDate.time.toString())
 
-
         // Find how many milliseconds until the event
         val diff = eventDate.timeInMillis - currentDate.timeInMillis
         // convert milli to day, hours, minutes, seconds

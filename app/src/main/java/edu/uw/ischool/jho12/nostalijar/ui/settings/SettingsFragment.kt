@@ -8,20 +8,24 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.graphics.Color
+import androidx.core.app.NotificationCompat
 import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentSettingsBinding
 import java.util.Calendar
+
+val CHANNEL_ID = "channel"
+val CHANNEL_NAME = "channelName"
 
 class SettingsFragment : Fragment() {
 
@@ -36,12 +40,31 @@ class SettingsFragment : Fragment() {
     var alarmReceiver: BroadcastReceiver? = null
     val ALARM_ACTION = "edu.uw.ischool.cammip.ALARM"
 
+    private fun createNotifChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT).apply {
+                lightColor = Color.BLUE
+                enableLights(true)
+            }
+
+            val manager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        createNotifChannel()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
 
     ): View {
+
         val notificationsViewModel =
             ViewModelProvider(this).get(SettingsViewModel::class.java)
 
@@ -63,11 +86,21 @@ class SettingsFragment : Fragment() {
         }
 
         val alarmManager = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val saveButton = binding.saveBtn
         saveButton.setOnClickListener {
+
+
             if (selectedDay != null) {
                 //let user know their preference was saved
+
                 showToast("Preferences have been saved $selectedDay")
                 val filter = IntentFilter(ALARM_ACTION)
                 activity?.registerReceiver(alarmReceiver, filter)
@@ -75,7 +108,7 @@ class SettingsFragment : Fragment() {
                 //Checks permissions to set exact alarm
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     //alarmManager.setExact()
-                    val intent = Intent(requireContext(), AlarmReceiver::class.java)
+
                     val calendar = Calendar.getInstance()
 
                     when (selectedDay) {
@@ -83,12 +116,6 @@ class SettingsFragment : Fragment() {
                         "Friday" -> calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY)
                     }
 
-                    val pendingIntent = PendingIntent.getBroadcast(
-                        requireContext(),
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    )
 
                     alarmManager.set(
                         AlarmManager.RTC_WAKEUP,
@@ -111,10 +138,16 @@ class SettingsFragment : Fragment() {
             radioGroup.clearCheck()
             selectedDay = null
             //activity?.unregisterReceiver(alarmReceiver)
+
+            pendingIntent?.let {
+                alarmManager.cancel(it)
+            }
+
         }
 
         return root
     }
+
 
     private fun Fragment.showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
@@ -128,6 +161,20 @@ class SettingsFragment : Fragment() {
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        Toast.makeText(context, "Make a time capsule!", Toast.LENGTH_SHORT).show()
+        showNotif(context)
+    }
+
+    private fun showNotif(context: Context) {
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setContentTitle("Time Capsule Reminder")
+            .setContentText("Make a time capsule!")
+            .setSmallIcon(android.R.drawable.ic_notification_overlay)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .build()
+
+        manager.notify(1, notification)
     }
 }
