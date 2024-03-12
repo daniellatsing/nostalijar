@@ -124,7 +124,7 @@ class CreateFragment : Fragment() {
         val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("TimeCapsulePrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val gson = Gson()
-        val imagesJson = gson.toJson(imageUris.map { it.toString() }) // Convert Uri list to JSON
+        val imagesJson = gson.toJson(imageUris.map { it.toString() })
         editor.putString("capsuleTitle", binding.inputTitle.text.toString())
         editor.putString("capsuleCaption", binding.inputCaption.text.toString())
         editor.putString("capsuleDate", binding.selectDateBtn.text.toString())

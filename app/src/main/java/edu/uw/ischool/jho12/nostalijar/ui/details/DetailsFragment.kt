@@ -1,7 +1,6 @@
 package edu.uw.ischool.jho12.nostalijar.ui.details
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.Context
@@ -11,20 +10,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
-import androidx.constraintlayout.helper.widget.Carousel
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentDetailsBinding
 import edu.uw.ischool.jho12.nostalijar.ui.create.ImageAdapter
-
+import com.google.gson.reflect.TypeToken
 
 class DetailsFragment : Fragment() {
 
@@ -58,40 +54,67 @@ class DetailsFragment : Fragment() {
         binding.shareBtn.setOnClickListener {
             checkForSmsPermission()
             val message = "Capsule Title\nCapsule Caption\nLink"
-            // on below line creating an intent to send sms
             val intent = Intent(Intent.ACTION_VIEW)
-//            intent.addCategory(Intent.CATEGORY_APP_MESSAGING)
-            // on below line putting extra as sms body with the data from edit text
             intent.setType("vnd.android-dir/mms-sms")
             intent.putExtra("sms_body", message)
-//            intent.putExtra(Intent.EXTRA_STREAM, imageuri)
-            // on below line starting activity to send sms.
             startActivity(intent)
         }
 
-
-        // Button logic
-        doneBtn.setOnClickListener {
+        binding.doneBtn.setOnClickListener {
             Toast.makeText(requireContext(), "Directing to Home", LENGTH_SHORT).show()
             requireActivity().findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_home)
         }
+
         return root
     }
 
     private fun checkForSmsPermission() {
-        // This will (probably) prompt only once, when first installed/run on the device.
-        // Once obtained, the permission will be "sticky".
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.SEND_SMS) !=
             PackageManager.PERMISSION_GRANTED) {
-            Log.d("MainActivity", "Permission not granted!")
-            // Permission not yet granted. Use requestPermissions().
-            // MY_PERMISSIONS_REQUEST_SEND_SMS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
+            Log.d("DetailsFragment", "Permission not granted!")
             ActivityCompat.requestPermissions(
-                requireContext() as Activity, arrayOf(Manifest.permission.SEND_SMS), 1)
+                requireActivity(), arrayOf(Manifest.permission.SEND_SMS), REQUEST_SEND_SMS_PERMISSION
+            )
+        } else {
+            sendSms()
         }
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_SEND_SMS_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sendSms()
+                } else {
+                    Toast.makeText(requireContext(), "SMS permission denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun sendSms() {
+        val sharedPreferences = requireActivity().getSharedPreferences("TimeCapsulePrefs", Context.MODE_PRIVATE)
+        val title = sharedPreferences.getString("capsuleTitle", "No Title")
+        val caption = sharedPreferences.getString("capsuleCaption", "No Caption")
+
+        val message = "$title\n$caption\nLink"
+
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("smsto:")
+            putExtra("sms_body", message)
+        }
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(requireContext(), "No SMS app found", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    companion object {
+        private const val REQUEST_SEND_SMS_PERMISSION = 1
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

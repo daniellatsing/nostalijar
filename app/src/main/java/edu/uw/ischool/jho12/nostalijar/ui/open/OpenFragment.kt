@@ -124,7 +124,6 @@ class OpenFragment : Fragment() {
         ) {
             NotificationManagerCompat.from(requireContext()).notify(1, builder.build())
         } else {
-            // Request the permission
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),
