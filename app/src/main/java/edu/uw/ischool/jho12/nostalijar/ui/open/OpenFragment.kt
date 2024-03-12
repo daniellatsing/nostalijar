@@ -69,9 +69,9 @@ class OpenFragment : Fragment() {
 //        val timeString = grab from storage
         eventDate[Calendar.YEAR] = 2024
         eventDate[Calendar.MONTH] = 2 // 0-11 so 1 less
-        eventDate[Calendar.DAY_OF_MONTH] = 11
-        eventDate[Calendar.HOUR] = 8
-        eventDate[Calendar.MINUTE] = 27
+        eventDate[Calendar.DAY_OF_MONTH] = 12
+        eventDate[Calendar.HOUR] = 5
+        eventDate[Calendar.MINUTE] = 20
         eventDate[Calendar.SECOND] = 0
 
         Log.i("Time", currentDate.time.toString())
@@ -106,6 +106,7 @@ class OpenFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        handler.removeMessages(0)
         _binding = null
     }
 }

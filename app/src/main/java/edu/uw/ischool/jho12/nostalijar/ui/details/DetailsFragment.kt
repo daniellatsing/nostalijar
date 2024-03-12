@@ -67,6 +67,10 @@ class DetailsFragment : Fragment() {
             Toast.makeText(requireContext(), "Directing to Home", LENGTH_SHORT).show()
             requireActivity().findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_home)
         }
+
+        binding.shareBtn.setOnClickListener {
+
+        }
         return root
     }
 
