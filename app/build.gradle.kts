@@ -54,8 +54,4 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.13.0")
-<<<<<<< HEAD
-=======
-    //implementation("androidx.core:core-ktx:2.2.0")
->>>>>>> d1190ccb10e1857e3fa61342dc9e3e25f7da0986
 }
