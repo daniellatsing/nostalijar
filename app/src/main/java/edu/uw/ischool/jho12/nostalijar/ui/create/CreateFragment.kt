@@ -3,7 +3,9 @@ package edu.uw.ischool.jho12.nostalijar.ui.create
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputFilter
@@ -14,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentCreateBinding
 import java.util.Calendar
 
@@ -57,12 +60,18 @@ class CreateFragment : Fragment() {
         _binding = FragmentCreateBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        checkCapsuleExists()
+
         setupImageSelection()
         setupImageAdapter()
         setupDateAndTimePickers()
 
         binding.inputTitle.filters = arrayOf(InputFilter.LengthFilter(30))
         binding.inputCaption.filters = arrayOf(InputFilter.LengthFilter(100))
+
+        binding.createBtn.setOnClickListener {
+            saveCapsule()
+        }
 
         return view
     }
@@ -110,6 +119,31 @@ class CreateFragment : Fragment() {
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show()
         }
     }
+
+    private fun saveCapsule() {
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("TimeCapsulePrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val imagesJson = gson.toJson(imageUris.map { it.toString() }) // Convert Uri list to JSON
+        editor.putString("capsuleTitle", binding.inputTitle.text.toString())
+        editor.putString("capsuleCaption", binding.inputCaption.text.toString())
+        editor.putString("capsuleDate", binding.selectDateBtn.text.toString())
+        editor.putString("capsuleTime", binding.selectTimeBtn.text.toString())
+        editor.putString("capsuleImages", imagesJson)
+        editor.putBoolean("capsuleExists", true)
+        editor.apply()
+
+        Toast.makeText(requireContext(), "Capsule saved!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun checkCapsuleExists() {
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("TimeCapsulePrefs", Context.MODE_PRIVATE)
+        if (sharedPreferences.getBoolean("capsuleExists", false)) {
+            binding.createBtn.isEnabled = false
+            Toast.makeText(requireContext(), "A capsule is already waiting to be opened. You cannot create another.", Toast.LENGTH_LONG).show()
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
