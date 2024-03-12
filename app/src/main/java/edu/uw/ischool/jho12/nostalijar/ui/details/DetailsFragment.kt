@@ -1,21 +1,24 @@
 package edu.uw.ischool.jho12.nostalijar.ui.details
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.constraintlayout.helper.widget.Carousel
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentDetailsBinding
-import com.denzcoskun.imageslider.constants.ScaleTypes
-import com.denzcoskun.imageslider.models.SlideModel
-import com.denzcoskun.imageslider.ImageSlider
-import com.denzcoskun.imageslider.interfaces.ItemClickListener
+import edu.uw.ischool.jho12.nostalijar.ui.create.ImageAdapter
 
 class DetailsFragment : Fragment() {
 
@@ -38,32 +41,40 @@ class DetailsFragment : Fragment() {
             textView.text = it
         }
 
-        // Create the image list with local resource IDs or file paths
-        val imageList = ArrayList<SlideModel>()
+        // Dummy list of image URIs
+        val imageUris: List<Uri> = listOf(Uri.parse("uri1"), Uri.parse("uri2"), Uri.parse("uri3"))
 
-        // Will need to implement with stored images from CreateFragment
-        // imageList.add(SlideModel("String Url" or R.drawable, "title")
+        val recyclerView: RecyclerView = binding.recyclerView
+        val adapter = ImageAdapter(requireContext(), imageUris)
+        val doneBtn: Button = binding.doneBtn
+        val carousel: Carousel = binding.carousel
 
-        // Set image list to ImageSlider
-        binding.imageSlider.setImageList(imageList)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-        binding.imageSlider.setImageList(imageList, ScaleTypes.FIT) // for all images
-
-        binding.imageSlider.setItemClickListener(object : ItemClickListener {
-            override fun onItemSelected(position: Int) {
-                TODO("Not yet implemented")
-                // You can listen here.
+        val carouselAdapter = ImageAdapter(requireContext(), imageUris)
+        carousel.setAdapter(object : Carousel.Adapter {
+            override fun count(): Int {
+                return carouselAdapter.itemCount
             }
-            override fun doubleClick(position: Int) {
-                TODO("Not yet implemented")
-                // Do not use onItemSelected if you are using a double click listener at the same time.
-                // Its just added for specific cases.
-                // Listen for clicks under 250 milliseconds.
+
+            override fun populate(view: View, index: Int) {
+                val imageView: ImageView =
+                    view.findViewById(R.id.imageView)
+                imageView.setImageURI(imageUris[index])
+
+                val viewHolder = carouselAdapter.onCreateViewHolder(view.parent as ViewGroup, 0)
+                carouselAdapter.onBindViewHolder(viewHolder, index)
+                (view as ViewGroup).addView(viewHolder.itemView)
+            }
+
+            override fun onNewItem(index: Int) {
+                // Called when an item is set.
             }
         })
 
         // Button logic
-        binding.doneBtn.setOnClickListener {
+        doneBtn.setOnClickListener {
             Toast.makeText(requireContext(), "Directing to Home", LENGTH_SHORT).show()
             requireActivity().findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_home)
         }
