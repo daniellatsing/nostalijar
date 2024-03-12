@@ -3,15 +3,18 @@ package edu.uw.ischool.jho12.nostalijar
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import edu.uw.ischool.jho12.nostalijar.databinding.ActivityMainBinding
+import android.Manifest
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Nostalijar"
@@ -47,6 +50,12 @@ class MainActivity : AppCompatActivity() {
             }
             // Register the channel with the system.
             notificationManager.createNotificationChannel(channel)
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
 
         setupActionBarWithNavController(navController, appBarConfiguration)
