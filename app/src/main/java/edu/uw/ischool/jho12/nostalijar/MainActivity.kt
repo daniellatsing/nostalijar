@@ -60,5 +60,12 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        clearSharedPreferences()
+    }
+
+    private fun clearSharedPreferences() {
+        val sharedPreferences = getSharedPreferences("TimeCapsulePrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().clear().apply()
     }
 }

@@ -1,142 +1,105 @@
 package edu.uw.ischool.jho12.nostalijar.ui.open
 
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentOpenBinding
-import edu.uw.ischool.jho12.nostalijar.ui.details.DetailsFragment
-import edu.uw.ischool.jho12.nostalijar.ui.settings.SettingsFragment
-import java.util.Calendar
-import java.util.TimeZone
-import android.Manifest
-import android.app.Activity
-import android.app.PendingIntent
-import android.content.Intent
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import edu.uw.ischool.jho12.nostalijar.ui.home.HomeFragment
+import java.text.SimpleDateFormat
+import java.util.*
 
 class OpenFragment : Fragment() {
 
     private var _binding: FragmentOpenBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var sharedPreferences: SharedPreferences
+    private var countdownTimer: CountDownTimer? = null
 
-    private val handler = Handler(Looper.getMainLooper())
-    private lateinit var notificationManager: NotificationManager
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this)[OpenViewModel::class.java]
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentOpenBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textOpen
-        dashboardViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-
-        handler.post(object : Runnable {
-            override fun run() {
-                // Keep the postDelayed before the updateTime(), so when the event ends, the handler will stop too.
-                handler.postDelayed(this, 1000)
-                updateTime()
-            }
-        })
+        createNotificationChannel()
+        sharedPreferences = requireActivity().getSharedPreferences("TimeCapsulePrefs", Context.MODE_PRIVATE)
 
         binding.viewBtnDetails.setOnClickListener {
-            requireActivity().findNavController(R.id.nav_host_fragment_activity_main).navigate(R.id.navigation_details)
+            it.findNavController().navigate(R.id.navigation_details)
         }
-        return root
+
+        return binding.root
     }
 
-    private fun updateTime() {
-        // Set Current Date
-        val currentDate = Calendar.getInstance()
-        // set the time capsule open date
-        val eventDate = Calendar.getInstance()
-//        val dateString = grab from storage
-//        val timeString = grab from storage
-        eventDate[Calendar.YEAR] = 2024
-        eventDate[Calendar.MONTH] = 2 // 0-11 so 1 less
-        eventDate[Calendar.DAY_OF_MONTH] = 12
-        eventDate[Calendar.HOUR] = 6
-        eventDate[Calendar.MINUTE] = 47
-        eventDate[Calendar.SECOND] = 0
-
-        Log.i("Time", currentDate.time.toString())
-        Log.i("Time2", eventDate.time.toString())
-
-        // Find how many milliseconds until the event
-        val diff = eventDate.timeInMillis - currentDate.timeInMillis
-        // convert milli to day, hours, minutes, seconds
-        val days = diff / (24 * 60 * 60 * 1000)
-        val hours = diff / (1000 * 60 * 60) % 24
-        val minutes = diff / (1000 * 60) % 60
-        val seconds = (diff / 1000) % 60
-
-        binding.countdown.text = "${days}d ${hours}h ${minutes}m ${seconds}s"
-
-        if (currentDate.time >= eventDate.time) {
-            endEvent()
-        }
+    override fun onResume() {
+        super.onResume()
+        checkIfTimeToOpen()
     }
 
-    private fun endEvent() {
-        // change UI and stop the handler
-        binding.countdown.text = getString(R.string.timer_end_text)
-        handler.removeMessages(0)
-        binding.viewBtnDetails.isEnabled = true
+    private fun checkIfTimeToOpen() {
+        val openDateStr = sharedPreferences.getString("capsuleDate", null)
+        val openTimeStr = sharedPreferences.getString("capsuleTime", null)
 
-        // create notification
-        val intent = Intent(requireContext(), HomeFragment::class.java)
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        var builder = NotificationCompat.Builder(requireContext(), "nostalijarNotif")
-            .setSmallIcon(R.drawable.ic_rounded_alarm_100dp)
-            .setContentTitle("Time's up!")
-            .setContentText("It's time to view your capsule!")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
+        if (openDateStr != null && openTimeStr != null) {
+            val dateTimeFormat = SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.getDefault())
+            val openDateTime = dateTimeFormat.parse("$openDateStr $openTimeStr")
+            val currentTime = Calendar.getInstance().time
 
-        // send notification
-        with(NotificationManagerCompat.from(requireContext())) {
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    requireContext() as Activity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            if (openDateTime != null) {
+                if (currentTime.before(openDateTime)) {
+                    val diff = openDateTime.time - currentTime.time
+                    binding.viewBtnDetails.isEnabled = false
+                    binding.viewBtnDetails.setBackgroundColor(Color.GRAY)
+                    binding.openDateTime.text = "Opens on: $openDateStr at $openTimeStr"
+
+                    countdownTimer = object : CountDownTimer(diff, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                            binding.countdown.text = "Opens in: ${millisUntilFinished / 1000} seconds"
+                        }
+
+                        override fun onFinish() {
+                            binding.viewBtnDetails.isEnabled = true
+                            binding.viewBtnDetails.setBackgroundColor(Color.GREEN)
+                            binding.countdown.text = "The capsule is ready to open!"
+                        }
+                    }.start()
+
+                } else {
+                    binding.viewBtnDetails.isEnabled = true
+                    binding.viewBtnDetails.setBackgroundColor(Color.GREEN)
+                    binding.openDateTime.text = "The capsule is ready to open!"
+                }
             }
-            // notificationId is a unique int for each notification that you must define.
-            notify(1234, builder.build())
         }
+    }
 
+    private fun createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(getString(R.string.notification_channel_id), name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     override fun onDestroyView() {
-        handler.removeMessages(0)
         super.onDestroyView()
         _binding = null
+        countdownTimer?.cancel()
     }
 }
