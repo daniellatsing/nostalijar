@@ -60,7 +60,7 @@ class DetailsFragment : Fragment() {
 
             override fun populate(view: View, index: Int) {
                 val imageView: ImageView =
-                    view.findViewById(R.id.imageView) // Assuming you have an ImageView in your carousel item layout
+                    view.findViewById(R.id.imageView)
                 imageView.setImageURI(imageUris[index])
 
                 val viewHolder = carouselAdapter.onCreateViewHolder(view.parent as ViewGroup, 0)
