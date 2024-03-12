@@ -104,6 +104,7 @@ class OpenFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        handler.removeMessages(0)
         super.onDestroyView()
         _binding = null
     }
