@@ -1,5 +1,6 @@
 package edu.uw.ischool.jho12.nostalijar.ui.open
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,16 +8,21 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import edu.uw.ischool.jho12.nostalijar.MainActivity
 import edu.uw.ischool.jho12.nostalijar.R
 import edu.uw.ischool.jho12.nostalijar.databinding.FragmentOpenBinding
 import java.text.SimpleDateFormat
@@ -71,6 +77,7 @@ class OpenFragment : Fragment() {
                             binding.viewBtnDetails.isEnabled = true
                             binding.viewBtnDetails.setBackgroundColor(Color.GREEN)
                             binding.countdown.text = "The capsule is ready to open!"
+                            sendNotification()
                         }
                     }.start()
 
@@ -95,6 +102,49 @@ class OpenFragment : Fragment() {
                 requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+    }
+    private fun sendNotification() {
+        val intent = Intent(requireContext(), MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val builder = NotificationCompat.Builder(requireContext(), getString(R.string.notification_channel_id))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle("Nostalijar")
+            .setContentText("Your time capsule is ready to open!")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            NotificationManagerCompat.from(requireContext()).notify(1, builder.build())
+        } else {
+            // Request the permission
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_NOTIFICATION_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_NOTIFICATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                sendNotification() // Resend the notification if permission is granted
+            } else {
+                Toast.makeText(requireContext(), "Notification permission denied. Cannot send notifications.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    companion object {
+        private const val REQUEST_NOTIFICATION_PERMISSION = 1001
     }
 
     override fun onDestroyView() {
