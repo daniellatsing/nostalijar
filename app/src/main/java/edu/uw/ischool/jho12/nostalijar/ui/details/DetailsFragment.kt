@@ -89,6 +89,7 @@ class DetailsFragment : Fragment() {
             // on below line putting extra as sms body with the data from edit text
             intent.setType("vnd.android-dir/mms-sms")
             intent.putExtra("sms_body", message)
+//            intent.putExtra(Intent.EXTRA_STREAM, imageuri)
             // on below line starting activity to send sms.
             startActivity(intent)
         }
@@ -114,11 +115,6 @@ class DetailsFragment : Fragment() {
             // result of the request.
             ActivityCompat.requestPermissions(
                 requireContext() as Activity, arrayOf(Manifest.permission.SEND_SMS), 1)
-            binding.shareBtn.isEnabled = false
-            checkForSmsPermission()
-        } else {
-            // Permission already granted. Enable the message button.
-            binding.shareBtn.isEnabled = true
         }
     }
 
